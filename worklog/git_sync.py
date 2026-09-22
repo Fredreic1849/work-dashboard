@@ -328,10 +328,22 @@ def _commit(repo, device, catalog=False):
 def _fetch_rebase(repo):
     _git(repo, "fetch", "origin")
     if _git(repo, "rev-parse", "--verify", "refs/remotes/origin/main", check=False).returncode == 0:
+        if _git(repo, "merge-base", "--is-ancestor", "refs/remotes/origin/main", "HEAD", check=False).returncode == 0:
+            return
         result = _git(repo, "rebase", "refs/remotes/origin/main", check=False)
         if result.returncode:
             _git(repo, "rebase", "--abort", check=False)
             raise SyncError("Journal histories conflict; local commits were retained and no force push was used.")
+
+
+def _prepare_initial_branch(repo):
+    # `worklog init` can create an unborn local branch while GitHub already has
+    # a README/catalog. Start from that history before creating our first commit.
+    if _git(repo, "rev-parse", "--verify", "HEAD", check=False).returncode == 0:
+        return
+    _git(repo, "fetch", "origin")
+    if _git(repo, "rev-parse", "--verify", "refs/remotes/origin/main", check=False).returncode == 0:
+        _git(repo, "checkout", "-B", "main", "refs/remotes/origin/main")
 
 
 def _receipt(repo, device, pending):
@@ -362,6 +374,7 @@ def sync(store, retries=3):
                 raise SyncError("The journal clone must be on its main branch.")
             _verify_remote(store, repo)
             _check_dirty(repo, device, allow_catalog=bool(store.config.get("primary")))
+            _prepare_initial_branch(repo)
             _guard_held_history(store, repo, device)
             _guard_catalog_history(store, repo)
             # A record arriving while we upload belongs to the next receipt batch.

@@ -66,6 +66,44 @@ class GitSyncTests(unittest.TestCase):
         self.assertTrue(git_sync.sync(self.store)["ok"])
         self.assertEqual(first, git(self.remote, "rev-parse", "main"))
 
+    def test_first_sync_from_init_preserves_existing_remote_history(self):
+        repo = self.root / "fresh-init"
+        repo.mkdir()
+        git(repo, "init", "--initial-branch=main")
+        git(repo, "remote", "add", "origin", str(self.remote))
+        self.store.config.update(repo_path=str(repo), primary=True)
+        self.store.config["projects"][0]["publish"] = True
+        before = git(self.remote, "rev-parse", "main")
+        event = self.record()
+        result = git_sync.sync(self.store)
+        self.assertTrue(result["ok"], result)
+        self.assertEqual([], self.store.pending())
+        git(self.remote, "merge-base", "--is-ancestor", before, "main")
+        catalog = json.loads(self.remote_file("projects.json"))
+        self.assertEqual(["demo"], [entry["id"] for entry in catalog["projects"]])
+        self.assertIn(event["id"], self.remote_file("devices/mac-a/days/" + event["day"] + ".jsonl"))
+
+    def test_fetch_preserves_a_resolved_initial_history_merge(self):
+        repo = self.root / "resolved-init"
+        repo.mkdir()
+        git(repo, "init", "--initial-branch=main")
+        git(repo, "config", "user.name", "Test")
+        git(repo, "config", "user.email", "test@example.org")
+        git(repo, "remote", "add", "origin", str(self.remote))
+        catalog = {"schema_version": 1, "projects": []}
+        (repo / "projects.json").write_text(json.dumps(catalog, indent=2))
+        git(repo, "add", "projects.json")
+        git(repo, "commit", "-m", "Local initialization")
+        git(repo, "fetch", "origin")
+        conflict = subprocess.run(["git", "-C", str(repo), "merge", "--no-commit", "--allow-unrelated-histories", "origin/main"], capture_output=True)
+        self.assertNotEqual(0, conflict.returncode)
+        (repo / "projects.json").write_text(self.remote_file("projects.json") + "\n")
+        git(repo, "add", "projects.json")
+        git(repo, "commit", "-m", "Preserve both initial histories")
+        merged = git(repo, "rev-parse", "HEAD")
+        git_sync._fetch_rebase(repo)
+        self.assertEqual(merged, git(repo, "rev-parse", "HEAD"))
+
     def test_offline_queue_survives_then_catches_up(self):
         event = self.record(occurred_at=(datetime.now(timezone.utc) - timedelta(days=3)).isoformat())
         original = git_sync._git
