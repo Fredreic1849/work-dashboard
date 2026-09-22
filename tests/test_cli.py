@@ -82,6 +82,14 @@ class CliTests(unittest.TestCase):
         record = self.command("context", "--project", "personal")["records"][0]
         self.assertEqual(record["title"], "明确的小结")
 
+    def test_same_structured_record_replay_is_idempotent(self):
+        self.project("personal", "auto")
+        body = {"id": "worklog:stable-turn:result", "project_id": "personal", "title": "可重放的小结", "summary": "同一份内容"}
+        first = self.command("record", "--json", body=body)
+        second = self.command("record", "--json", body=body)
+        self.assertEqual(first["id"], second["id"])
+        self.assertEqual(self.command("status")["local_records"], 1)
+
     def test_invalid_json_source_fails_without_traceback_or_saved_record(self):
         self.project("personal", "auto")
         result = self.command("record", "--json", body={

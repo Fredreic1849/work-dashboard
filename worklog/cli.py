@@ -157,6 +157,10 @@ def record(store, args):
         key = hashlib.sha256((store.config["device_id"] + str(path)).encode()).hexdigest()
         fields.setdefault("evidence", []).append({"id": key, "label": "本地文件证据", "device_id": store.config["device_id"], "digest": digest.hexdigest(), "checked_at": now(), "kind": "local"})
         local_evidence.append((key, str(path)))
+    if isinstance(fields.get("id"), str) and "occurred_at" not in fields:
+        existing = store.db.execute("SELECT payload FROM events WHERE id=?", (fields["id"],)).fetchone()
+        if existing:
+            fields["occurred_at"] = json.loads(existing[0])["occurred_at"]
     event = make_event(kind, project, title, **fields)
     event_id = store.add_event(event, eligible=True)
     with store.db:
@@ -190,10 +194,11 @@ def service(store, operation):
         from .git_sync import sync, backup
         scan(store, days=7)
         result = sync(store)
-        try:
-            backup(store)
-        except (ValueError, OSError):
-            store.issue("backup_failed", "Local backup failed; the journal remains available.")
+        if result.get("ok"):
+            try:
+                backup(store)
+            except (ValueError, OSError):
+                store.issue("backup_failed", "Local backup failed; the journal remains available.")
         return result
     if sys.platform != "darwin":
         raise ValueError("LaunchAgent requires macOS")
