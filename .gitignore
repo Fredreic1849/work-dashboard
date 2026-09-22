@@ -1,0 +1,23 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Local credentials, private journals, and runtime files never belong in the public repo.
+.env
+.env.*
+*.sqlite
+*.sqlite3
+*.db
+*.bundle
+work-journal/
+private/
+runtime/
+work/

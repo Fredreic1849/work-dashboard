@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light">
+  <title>工作手记 · Worklog</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div id="login-screen" class="login-screen">
+    <section class="welcome">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">w.</span><span>工作手记<small>WORKLOG</small></span></a>
+      <div class="welcome-main"><p class="eyebrow">LESS LOST CONTEXT. MORE GOOD WORK.</p><h1>让每天的工作，<br>都有迹可循。</h1><p class="welcome-copy">做过什么，想到什么，下一步做什么。<br>把散落在不同电脑上的工作，整理成一条清楚的线。</p>
+        <div class="note-preview" aria-hidden="true"><div class="note-date"><span class="tiny-dot"></span> 一份清楚的工作记录</div><p>今天推进了什么？</p><div class="preview-line long"></div><div class="preview-line"></div><div class="preview-bottom"><span>有依据的进展</span><span>可接续的下一步 ↗</span></div></div>
+      </div>
+      <div class="welcome-footer">你的记录 · 你的 GitHub · 零模型调用</div>
+    </section>
+    <main class="login-panel">
+      <div class="login-card"><span class="private-label"><span class="tiny-dot"></span> 个人私有空间</span><h2>打开你的工作手记</h2><p class="muted login-description">记录存放在你的 GitHub 私有仓库。使用专用的只读 Token，在当前标签页解锁。</p>
+        <form id="login-form" autocomplete="off">
+          <label for="token">Fine-grained GitHub Token</label><input id="token" name="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="github_pat_…" required aria-describedby="token-help">
+          <p class="field-help" id="token-help">仅授权 work-journal 仓库的 Contents: Read-only。Token 不会保存在浏览器中。</p>
+          <details class="settings"><summary>连接设置 <span>GitHub 私有仓库</span></summary><div class="settings-fields"><label for="owner">GitHub 用户名</label><input id="owner" value="Fredreic1849" autocomplete="off" spellcheck="false" required><label for="repository">私有仓库名称</label><input id="repository" value="work-journal" autocomplete="off" spellcheck="false" required><label for="owner-id">账号数值 ID</label><input id="owner-id" value="105154738" inputmode="numeric" autocomplete="off" required></div></details>
+          <div id="login-error" role="alert" class="error-message" hidden></div><button class="button primary full" id="unlock" type="submit">解锁工作记录 <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="divider"><span>先看看长什么样</span></div><button class="button secondary full" id="demo-button" type="button">打开演示空间</button><p class="login-footnote">演示仅含虚构项目。此页面没有第三方分析、外部脚本或后台模型任务。</p>
+      </div>
+    </main>
+  </div>
+  <div id="dashboard" class="dashboard" hidden>
+    <aside class="sidebar"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">w.</span><span>工作手记<small>WORKLOG</small></span></a><p class="nav-label">我的工作空间</p><nav aria-label="主要页面">
+      <button class="nav-item active" data-view="today" aria-current="page"><span aria-hidden="true">◷</span> 今天</button><button class="nav-item" data-view="projects"><span aria-hidden="true">▦</span> 项目</button><button class="nav-item" data-view="ideas"><span aria-hidden="true">◇</span> Ideas</button><button class="nav-item" data-view="history"><span aria-hidden="true">≡</span> 历史</button><button class="nav-item" data-view="sync"><span aria-hidden="true">⇄</span> 同步情况</button>
+    </nav><div class="sidebar-bottom"><div id="workspace-label" class="workspace-label">私有记录</div><p>只记录进展，<br>也给想法留个位置。</p><button class="logout" id="logout" type="button">锁定并退出 <span aria-hidden="true">↗</span></button></div></aside>
+    <div class="main-shell"><header class="topbar"><span class="breadcrumb">我的空间 <span>/</span> <strong id="breadcrumb-view">今天</strong></span><div class="topbar-actions"><span class="session-badge" id="session-badge">私有连接</span><button class="icon-button" id="refresh" aria-label="刷新记录" title="刷新记录">↻</button></div></header>
+      <main id="main-content" class="main-content"><div class="page-heading"><div><p class="eyebrow" id="page-eyebrow">DAILY WORKSPACE</p><h1 id="page-title">今天，做了些什么？</h1><p class="muted" id="page-description">把进展、想法和下一步，放在一起。</p></div><div class="date-stamp"><span id="header-weekday"></span><strong id="header-date"></strong><small>Asia / Shanghai</small></div></div>
+        <div id="global-message" class="notice" role="status" hidden></div>
+        <div id="demo-notice" class="demo-notice" hidden><span>演示空间</span> 以下记录与项目均为虚构，用于体验界面。</div>
+        <div class="filter-bar" id="filter-bar"><label class="search-field"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜索工作、想法或下一步…" aria-label="搜索记录"></label><select id="project-filter" aria-label="筛选项目"><option value="">全部项目</option></select><select id="device-filter" aria-label="筛选设备"><option value="">全部设备</option></select></div>
+        <div id="view-content"></div>
+        <footer class="main-footer"><span>记录有来源，进展有依据。</span><span id="data-freshness"></span></footer>
+      </main>
+    </div>
+  </div>
+  <noscript><div class="noscript">请启用 JavaScript 以读取你的 GitHub 私有工作记录。</div></noscript>
+</body>
+</html>

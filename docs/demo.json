@@ -1,0 +1,237 @@
+{
+  "base_day": "2026-09-22",
+  "schema_version": 1,
+  "projects": [
+    {
+      "id": "demo-atlas",
+      "name": "Atlas · 阅读地图",
+      "goal": "为读过的文章建立一张可回访的地图，把笔记变成下一次思考的起点。"
+    },
+    {
+      "id": "demo-moss",
+      "name": "Moss · 花园观察",
+      "goal": "用简单的观察记录，了解一座小花园随季节发生的变化。"
+    },
+    {
+      "id": "demo-paper",
+      "name": "Paper · 个人随笔",
+      "goal": "每周写一篇有具体观察、清楚表达的短文。"
+    }
+  ],
+  "snapshots": [
+    {
+      "schema_version": 1,
+      "device": {
+        "id": "demo-desk",
+        "name": "桌面的 Mac"
+      },
+      "generated_at": "2026-09-22T08:20:00Z",
+      "coverage_start": "2026-09-18",
+      "days": [
+        "2026-09-18",
+        "2026-09-20",
+        "2026-09-21",
+        "2026-09-22"
+      ],
+      "issues": [],
+      "events": [
+        {
+          "schema_version": 1,
+          "id": "demo-e1",
+          "kind": "worklog",
+          "project_id": "demo-atlas",
+          "occurred_at": "2026-09-22T08:10:00Z",
+          "day": "2026-09-22",
+          "title": "把零散笔记，整理成一条阅读线索",
+          "summary": "重新整理了三篇关于城市散步的文章，把共同的问题标记出来：一条路，怎样改变我们观察日常的方式？",
+          "result": "完成阅读地图第一版，三篇笔记之间有了明确的关联。",
+          "next_action": "选一个共同问题，写出 200 字的阅读小结。",
+          "priority": "P1",
+          "evidence_level": "local",
+          "source": {
+            "kind": "codex",
+            "thread_id": "demo-thread-atlas",
+            "turn_id": "demo-turn-2",
+            "device_id": "demo-desk"
+          },
+          "evidence": [
+            {
+              "id": "demo-proof-map",
+              "label": "阅读地图草稿（演示）",
+              "device_id": "demo-desk",
+              "kind": "local",
+              "checked_at": "2026-09-22T08:09:00Z",
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "id": "demo-e2",
+          "kind": "idea",
+          "project_id": "demo-moss",
+          "occurred_at": "2026-09-22T06:35:00Z",
+          "day": "2026-09-22",
+          "title": "给花园做一张“声音日历”",
+          "summary": "除了植物的生长，也许可以记录风、雨和鸟鸣，让每次观察多一个角度。",
+          "result": "留下一个可验证的观察想法。",
+          "next_action": "连续三天，在同一时刻记录一分钟的花园声音。",
+          "priority": "P2",
+          "evidence_level": "unverified",
+          "idea_status": "proposed",
+          "hypothesis": "声音的变化，可能比照片更早提示季节转换。",
+          "validation": "做三天的简短记录，比较是否能分辨天气与时间差异。",
+          "source": {
+            "kind": "manual",
+            "device_id": "demo-desk"
+          },
+          "evidence": []
+        },
+        {
+          "schema_version": 1,
+          "id": "demo-e3",
+          "kind": "worklog",
+          "project_id": "demo-paper",
+          "occurred_at": "2026-09-22T02:15:00Z",
+          "day": "2026-09-22",
+          "title": "完成本周随笔的开头",
+          "summary": "围绕“把同一条路走慢一点”写完了开头。还需要补一个具体的场景，来支持后面的观察。",
+          "result": "保存一份 600 字草稿。",
+          "next_action": "补写一个具体场景，再删掉两段重复的解释。",
+          "priority": "P0",
+          "evidence_level": "local",
+          "source": {
+            "kind": "manual",
+            "device_id": "demo-desk"
+          },
+          "evidence": [
+            {
+              "id": "demo-proof-essay",
+              "label": "随笔草稿（演示）",
+              "kind": "local",
+              "device_id": "demo-desk",
+              "checked_at": "2026-09-22T02:13:00Z",
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "id": "demo-e4",
+          "kind": "checkpoint",
+          "project_id": "demo-atlas",
+          "occurred_at": "2026-09-21T10:15:00Z",
+          "day": "2026-09-21",
+          "title": "阅读地图进入第一轮整理",
+          "summary": "基础笔记已准备好，接下来聚焦不同文章之间的关联。",
+          "result": "阶段一：完成资料收集；阶段二：开始建立关联。",
+          "next_action": "从三个共同问题开始整理。",
+          "priority": "P2",
+          "evidence_level": "unverified",
+          "source": {
+            "kind": "manual",
+            "device_id": "demo-desk"
+          },
+          "evidence": []
+        },
+        {
+          "schema_version": 1,
+          "id": "demo-e5",
+          "kind": "idea",
+          "project_id": "demo-atlas",
+          "occurred_at": "2026-09-20T05:30:00Z",
+          "day": "2026-09-20",
+          "title": "让每篇笔记都留下一个可以实践的问题",
+          "summary": "读完文章之后，留一个可以在生活里观察或尝试的问题。",
+          "result": "先在三篇笔记中试用。",
+          "next_action": "周末回顾三个问题，看看有没有带来新的观察。",
+          "priority": "P2",
+          "evidence_level": "unverified",
+          "idea_status": "testing",
+          "hypothesis": "一个具体的问题，能帮助阅读内容被再次使用。",
+          "validation": "比较一周后，有问题的笔记和没有问题的笔记各被回看了几次。",
+          "source": {
+            "kind": "manual",
+            "device_id": "demo-desk"
+          },
+          "evidence": []
+        },
+        {
+          "schema_version": 1,
+          "id": "demo-e6",
+          "kind": "worklog",
+          "project_id": "demo-paper",
+          "occurred_at": "2026-09-18T09:20:00Z",
+          "day": "2026-09-18",
+          "title": "收集本周随笔的观察素材",
+          "summary": "整理了一周里关于步行、等车和街边植物的几条观察。",
+          "result": "选定“把同一条路走慢一点”作为主题。",
+          "next_action": "从一个具体场景写起。",
+          "priority": "P2",
+          "evidence_level": "unverified",
+          "source": {
+            "kind": "manual",
+            "device_id": "demo-desk"
+          },
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "device": {
+        "id": "demo-travel",
+        "name": "随行的 Mac"
+      },
+      "generated_at": "2026-09-22T07:20:00Z",
+      "coverage_start": "2026-09-20",
+      "days": [
+        "2026-09-20",
+        "2026-09-22"
+      ],
+      "issues": [],
+      "events": [
+        {
+          "schema_version": 1,
+          "id": "demo-e7",
+          "kind": "activity",
+          "project_id": "demo-moss",
+          "occurred_at": "2026-09-22T04:20:00Z",
+          "day": "2026-09-22",
+          "title": "发现一段新的工作活动",
+          "summary": "Codex 任务有更新，尚未保存结构化小结。",
+          "result": "摘要待补；没有把对话中的陈述当作已完成结果。",
+          "next_action": "补充这次工作的进展与下一步。",
+          "priority": "P2",
+          "evidence_level": "unverified",
+          "source": {
+            "kind": "codex",
+            "thread_id": "demo-thread-garden",
+            "turn_id": "demo-turn-1",
+            "device_id": "demo-travel"
+          },
+          "evidence": []
+        },
+        {
+          "schema_version": 1,
+          "id": "demo-e8",
+          "kind": "checkpoint",
+          "project_id": "demo-moss",
+          "occurred_at": "2026-09-20T02:10:00Z",
+          "day": "2026-09-20",
+          "title": "开始第一周花园观察",
+          "summary": "确定每天的观察时刻，先保持记录方式简单。",
+          "result": "已确定观察位置与时间，第一周结果待记录。",
+          "next_action": "记下第一天的天气和三项观察。",
+          "priority": "P2",
+          "evidence_level": "unverified",
+          "source": {
+            "kind": "manual",
+            "device_id": "demo-travel"
+          },
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}

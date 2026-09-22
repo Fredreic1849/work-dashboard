@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+WORKLOG_CODE_ROOT=$(python3 -c 'import os,sys; print(os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[1]))))' "$0")
+export PYTHONPATH="$WORKLOG_CODE_ROOT${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m worklog "$@"
