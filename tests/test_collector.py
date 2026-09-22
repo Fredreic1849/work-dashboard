@@ -1,4 +1,5 @@
 import json
+import hashlib
 import shutil
 import subprocess
 import tempfile
@@ -140,6 +141,35 @@ class CollectorTests(unittest.TestCase):
         self.write("one.jsonl", self.meta() + self.turn())
         scan(self.store)
         self.assertEqual(["worklog"], [e["kind"] for e in self.store.events()])
+
+    def test_repeated_turn_context_retains_first_occurrence_without_conflict(self):
+        path = self.write("one.jsonl", self.meta() + self.turn())
+        scan(self.store)
+        first = self.store.events()[0]
+        later = (datetime.fromisoformat(STAMP) + timedelta(days=1)).isoformat()
+        with path.open("a") as handle:
+            handle.write(line("turn_context", {"turn_id": "turn-one", "cwd": str(self.project)}, later))
+        scan(self.store)
+        self.assertEqual([first], self.store.events())
+        self.assertNotIn("record_conflict", self.issues())
+        self.assertNotIn("codex_schema", self.issues())
+        key = "codex:" + hashlib.sha256(str(path).encode()).hexdigest()
+        self.assertEqual(path.stat().st_size, self.store.cursor(key)["offset"])
+        self.assertIsNone(self.store.cursor("day"))
+
+    def test_inconsistent_turn_metadata_still_reports_conflict(self):
+        path = self.write("one.jsonl", self.meta() + self.turn())
+        scan(self.store)
+        other = self.root / "other-project"
+        other.mkdir()
+        self.store.config["projects"].append({"id": "other", "name": "Other", "paths": [str(other)], "policy": "auto"})
+        with path.open("a") as handle:
+            handle.write(self.turn(cwd=str(other)))
+        scan(self.store)
+        self.assertEqual(1, len(self.store.events()))
+        self.assertIn("record_conflict", self.issues())
+        self.assertIn("codex_metadata_conflict", self.issues())
+        self.assertNotIn("codex_schema", self.issues())
 
 
 if __name__ == "__main__":

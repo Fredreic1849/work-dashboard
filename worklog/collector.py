@@ -8,13 +8,13 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .core import make_event
+from .core import canonical, make_event
 
 _KNOWN_RECORDS = {
     "session_meta", "turn_context", "event_msg", "response_item", "compacted",
     "world_state", "token_usage_record", "inter_agent_communication_metadata",
 }
-_PARSER_VERSION = 1
+_PARSER_VERSION = 2
 
 
 def _id(value):
@@ -39,6 +39,7 @@ def _issue(store, code):
         "codex_unknown_record": "An unrecognized Codex record type was encountered; only known metadata was read.",
         "codex_unmapped": "Codex activity has no registered project mapping and remains local.",
         "codex_fork_boundary": "Inherited Codex history has no supported boundary; affected activity was not imported.",
+        "codex_metadata_conflict": "One logical Codex turn has inconsistent metadata; existing records were retained for local review.",
         "git_unreadable": "A registered project Git history could not be read.",
     }
     store.issue(code, messages[code])
@@ -56,7 +57,7 @@ def _fingerprint(handle, length):
     return digest.hexdigest()
 
 
-def _scan_file(store, path, cutoff, days, summarized):
+def _scan_file(store, path, cutoff, days, summarized, known):
     key = "codex:" + hashlib.sha256(str(path).encode()).hexdigest()
     cursor = store.cursor(key) or {}
     count = 0
@@ -149,11 +150,23 @@ def _scan_file(store, path, cutoff, days, summarized):
                     source={"kind": "codex", "thread_id": meta["id"], "turn_id": turn,
                             "device_id": store.config["device_id"]},
                 )
+                previous = known.get(event["id"])
+                if previous:
+                    # Codex can emit updated context repeatedly inside one turn.
+                    # Keep its first observed occurrence; this is not a new activity.
+                    before, after = dict(previous), dict(event)
+                    for field in ("occurred_at", "day"):
+                        before.pop(field, None)
+                        after.pop(field, None)
+                    if canonical(before) == canonical(after):
+                        count += 1
+                        continue
                 try:
                     store.add_event(event, eligible=True)
+                    known[event["id"]] = event
                     count += 1
                 except ValueError:
-                    _issue(store, "codex_schema")
+                    _issue(store, "codex_metadata_conflict" if previous else "codex_schema")
             prefix_length = min(offset, 2048)
             prefix = _fingerprint(handle, prefix_length)
             handle.seek(max(0, offset - 2048))
@@ -225,9 +238,10 @@ def scan(store, days=7):
                 files.update(root.rglob("*.jsonl"))
             except OSError:
                 _issue(store, "codex_unreadable")
-    summarized = {event.get("source", {}).get("turn_id") for event in store.events()
+    known = {event["id"]: event for event in store.events()}
+    summarized = {event.get("source", {}).get("turn_id") for event in known.values()
                   if event["kind"] in {"worklog", "checkpoint", "revision"}}
     for path in sorted(files):
-        count += _scan_file(store, path, cutoff, days, summarized)
+        count += _scan_file(store, path, cutoff, days, summarized, known)
     git_count = _scan_git(store, cutoff)
     return {"files": len(files), "activities_seen": count, "git_commits_seen": git_count}

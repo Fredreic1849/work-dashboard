@@ -64,6 +64,7 @@ worklog status
 
 ```sh
 python3 -m unittest discover -s tests -v
+node --test tests/frontend.test.mjs
 ```
 
-测试使用虚构数据和临时仓库。测试通过只说明所覆盖的本地行为通过；真实双机部署、GitHub 授权和连续七天使用需要按 [SETUP.md](SETUP.md) 的验收表核对。
+前端测试需要 Node.js，仅用于开发验证，网页运行不需要 Node.js。测试使用虚构数据和临时仓库。测试通过只说明所覆盖的本地行为通过；真实双机部署、GitHub 授权和连续七天使用需要按 [SETUP.md](SETUP.md) 的验收表核对。

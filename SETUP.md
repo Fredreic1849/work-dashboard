@@ -32,7 +32,7 @@ https://YOUR_GITHUB.github.io/work-dashboard/
 - Repository permissions：**Contents: Read-only**；保留 GitHub 必需的 Metadata 读取权限。
 - 设置有效期。无需授权其他仓库、Actions、管理权限或账号写入权限。
 
-打开网页，填写 GitHub owner、私有仓库名、账号数值 ID 和只读 Token。网页检查当前账号 ID、仓库私有属性和读取权限，再读取数据；仓库尚无记录时显示空状态。
+先完成下文主 Mac 的初始化和首次 `worklog sync`，生成 `projects.json`，再打开网页，填写 GitHub owner、私有仓库名、账号数值 ID 和只读 Token。网页检查当前账号 ID、仓库私有属性和读取权限，再读取数据；首次同步后没有工作记录时显示空状态。只有 README 的新仓库尚不能加载真实记录，可以先使用演示。
 
 Token 仅在当前标签页内存中存在。不要把 Token 放进网址、截图、配置文件、源码或聊天。页面不会记住 Token；可以用自己的密码管理器保存。退出、刷新或关闭标签页都会清除访问状态。GitHub 撤销 / 过期 Token 后，下次请求失败并清空展示。
 
@@ -49,7 +49,7 @@ worklog init --repo YOUR_GITHUB/work-journal --device 'Mac A' --primary
 worklog auth
 ```
 
-如果当前 shell 找不到 `worklog`，按安装输出添加 PATH，或直接用仓库的 `./bin/worklog`。也可以从仓库根目录运行 `python3 -m worklog`。
+如果当前 shell 找不到 `worklog`，运行 `export PATH="$HOME/.local/bin:$PATH"` 为当前终端加入命令目录，或直接使用 `~/.local/bin/worklog`。也可以在仓库根目录使用 `./bin/worklog` 或 `python3 -m worklog`。
 
 `init` 在本地建立配置、SQLite 和数据仓库工作区，不代表已上传。尚无认证时保留本地初始化结果；配置认证后再同步。
 
@@ -126,7 +126,7 @@ worklog service install
 worklog status
 ```
 
-服务在当前用户登录后运行，约每五分钟扫描并同步；Mac 关机、休眠或离线期间不会运行，恢复后补传。没有变化时不制造空提交。服务使用 Keychain 已配置的认证，不需要模型可用。
+服务在当前用户登录后运行，约每五分钟扫描并同步。Mac 关机或休眠时不运行，恢复后继续；离线时仍可采集并写入本地队列，远端同步失败后保留记录，联网后补传。没有变化时不制造空提交。服务使用 Keychain 已配置的认证，不需要模型可用。
 
 停止后台服务用 `worklog service uninstall`。它不删除日志、Keychain 凭证或 GitHub 仓库。不要同时从多个进程修改同一个本地数据仓库；同步器会通过本地锁避免并发执行。
 
